@@ -16,6 +16,7 @@ public interface HangHoaRepository extends BaseRepository<HangHoa, HangHoaRep, L
     @Query(value = "SELECT * FROM HangHoa c "
             + "WHERE 1=1 "
             + " AND ((:#{#param.thuocId} IS NULL) OR (c.ThuocId = :#{#param.thuocId}))"
+            + " AND (:#{#param.tenThuoc} IS NULL OR lower(c.TenThuoc) LIKE lower(concat('%',CONCAT(:#{#param.tenThuoc},'%'))))"
             + " AND (:#{#param.nhomThuocId} IS NULL OR c.NhomThuocId = :#{#param.nhomThuocId})"
             + " AND (:#{#param.nhomDuocLyId} IS NULL OR c.NhomDuocLyId = :#{#param.nhomDuocLyId})"
             + " AND (:#{#param.nhomHoatChatId} IS NULL OR c.NhomHoatChatId = :#{#param.nhomHoatChatId})"

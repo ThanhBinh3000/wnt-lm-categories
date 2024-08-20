@@ -48,10 +48,13 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
     }
 
     @Override
-    public List<HangHoaCache> getProductData() {
-        var ids = new ArrayList<Long>();
-        ids.add(9738374L);
-        return redisListService.getHangHoaByIds(ids);
+    public Page<HangHoa> getProductData(HangHoaRep req) {
+//        var ids = new ArrayList<Long>();
+//        ids.add(9738374L);
+        Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
+        Page<HangHoa> hangHoas = hdrRepo.searchPage(req, pageable);
+        return hangHoas;
+        //return redisListService.getHangHoaByIds(ids);
     }
 
 //    public HangHoaES saveProduct() {
