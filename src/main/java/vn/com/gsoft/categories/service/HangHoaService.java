@@ -12,7 +12,7 @@ public interface HangHoaService extends BaseService<HangHoa, HangHoaRep, Long> {
 
     void pushProductData();
 
-    List<HangHoaCache> getProductData();
+    Page<HangHoa> getProductData(HangHoaRep req);
 
     //HangHoaES saveProduct();
 }
