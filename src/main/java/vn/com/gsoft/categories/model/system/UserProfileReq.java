@@ -2,6 +2,7 @@ package vn.com.gsoft.categories.model.system;
 
 import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class UserProfileReq extends BaseRequest {
 
