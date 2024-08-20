@@ -34,7 +34,7 @@ public class SearchItemController {
     return ResponseEntity.ok(ResponseUtils.ok(nhomThuocService.searchList(req)));
   }
 
-  @PostMapping(value = PathConstant.URL_SEARCH_LIST + "-thuoc", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = PathConstant.URL_SEARCH_PAGE + "-thuoc", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<BaseResponse> searchPageThuoc(@RequestBody HangHoaRep req) throws Exception {
     return ResponseEntity.ok(ResponseUtils.ok(hangHoaService.searchPage(req)));

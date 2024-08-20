@@ -18,6 +18,6 @@ class PushDataRedis {
     private RedisListService redisListService;
     @Test
     void pushProductData() throws Exception {
-        List<HangHoaCache> hh = hangHoaService.getProductData();
+        //List<HangHoaCache> hh = hangHoaService.getProductData();
     }
 }
