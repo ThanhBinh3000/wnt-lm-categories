@@ -21,22 +21,80 @@ public class SearchItemController {
   private NhomThuocService nhomThuocService;
   @Autowired
   private HangHoaService hangHoaService;
+  @Autowired
+  private NhomNganhHangService nhomNganhHangService;
+  @Autowired
+  private NhomDuocLyService nhomDuocLyService;
+  @Autowired
+  private NhomHoatChatService nhomHoatChatService;
 
+  //region NHOM THUOC
   @PostMapping(value = PathConstant.URL_SEARCH_LIST + "-nhom-thuoc", produces = MediaType.APPLICATION_JSON_VALUE)
-  @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<BaseResponse> searchPageNhomThuoc(@RequestBody NhomThuocReq req) throws Exception {
-    return ResponseEntity.ok(ResponseUtils.ok(nhomThuocService.searchList(req)));
-  }
-
-  @PostMapping(value = PathConstant.URL_SEARCH_PAGE + "-nhom-thuoc", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<BaseResponse> searchListNhomThuoc(@RequestBody NhomThuocReq req) throws Exception {
     return ResponseEntity.ok(ResponseUtils.ok(nhomThuocService.searchList(req)));
   }
 
+  @PostMapping(value = PathConstant.URL_SEARCH_PAGE + "-nhom-thuoc", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchPageNhomThuoc(@RequestBody NhomThuocReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhomThuocService.searchList(req)));
+  }
+  //endregion
+
+  //region THUOC
   @PostMapping(value = PathConstant.URL_SEARCH_PAGE + "-thuoc", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<BaseResponse> searchPageThuoc(@RequestBody HangHoaRep req) throws Exception {
     return ResponseEntity.ok(ResponseUtils.ok(hangHoaService.searchPage(req)));
   }
+
+  @PostMapping(value = PathConstant.URL_SEARCH_LIST + "-thuoc", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchListThuoc(@RequestBody HangHoaRep req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(hangHoaService.getProductData(req)));
+  }
+  //endregion
+
+  //region NHOM NGANH HANG
+  @PostMapping(value = PathConstant.URL_SEARCH_LIST + "-nhom-nganh-hang", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchListNhomNganhHang(@RequestBody NhomNganhHangReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhomNganhHangService.searchList(req)));
+  }
+
+  @PostMapping(value = PathConstant.URL_SEARCH_PAGE + "-nhom-nganh-hang", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchPageNhomNganhHang(@RequestBody NhomNganhHangReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhomNganhHangService.searchPage(req)));
+  }
+  //endregion
+
+  //region NHOM DUOC LY
+  @PostMapping(value = PathConstant.URL_SEARCH_LIST + "-nhom-duoc-ly", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchListNhomDuocLy(@RequestBody NhomDuocLyReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhomDuocLyService.searchList(req)));
+  }
+
+  @PostMapping(value = PathConstant.URL_SEARCH_PAGE + "-nhom-duoc-ly", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchPageNhomDuocLy(@RequestBody NhomDuocLyReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhomDuocLyService.searchPage(req)));
+  }
+  //endregion
+
+  //region NHOM HOAT CHAT
+  @PostMapping(value = PathConstant.URL_SEARCH_LIST + "-nhom-hoat-chat", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchListNhomHoatChat(@RequestBody NhomHoatChatReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhomHoatChatService.searchList(req)));
+  }
+
+  @PostMapping(value = PathConstant.URL_SEARCH_PAGE + "-nhom-hoat-chat", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchPageNhomHoatChat(@RequestBody NhomHoatChatReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhomHoatChatService.searchPage(req)));
+  }
+  //endregion
 }

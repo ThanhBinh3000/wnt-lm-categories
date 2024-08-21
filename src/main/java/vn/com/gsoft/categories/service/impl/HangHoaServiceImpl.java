@@ -2,7 +2,15 @@ package vn.com.gsoft.categories.service.impl;
 
 
 import lombok.extern.log4j.Log4j2;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,10 +21,12 @@ import vn.com.gsoft.categories.model.cache.HangHoaCache;
 import vn.com.gsoft.categories.model.elastichsearch.HangHoaES;
 import vn.com.gsoft.categories.model.system.Profile;
 import vn.com.gsoft.categories.repository.*;
+import vn.com.gsoft.categories.service.ESListService;
 import vn.com.gsoft.categories.service.HangHoaService;
 import vn.com.gsoft.categories.service.RedisListService;
 import vn.com.gsoft.categories.util.system.DataUtils;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,8 +40,8 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
     private HangHoaRepository hdrRepo;
     @Autowired
     private RedisListService redisListService;
-//    @Autowired
-//    private HangHoaESRepository hangHoaESRepository;
+    @Autowired
+    private ESListService esListService;
 
     @Autowired
     public HangHoaServiceImpl(HangHoaRepository hdrRepo
@@ -41,27 +51,28 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
     }
 
     @Override
-    public void pushProductData() {
-        HangHoaRep rep = new HangHoaRep();
-        var data = hdrRepo.searchListHangHoa();
-        redisListService.pushProductDataRedis(DataUtils.convertList(data, HangHoaCache.class));
+    public void pushProductData() throws Exception{
+        HangHoaRep req = new HangHoaRep();
+        Pageable pageable = PageRequest.of(1, 10000);
+        var data = hdrRepo.searchPage(req, pageable);
+        esListService.pushProductData(data.stream().toList());
     }
 
     @Override
-    public Page<HangHoa> getProductData(HangHoaRep req) {
-//        var ids = new ArrayList<Long>();
-//        ids.add(9738374L);
-        Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
-        Page<HangHoa> hangHoas = hdrRepo.searchPage(req, pageable);
-        return hangHoas;
-        //return redisListService.getHangHoaByIds(ids);
+    public List<? extends Object> getProductData(HangHoaRep req) throws Exception {
+        var ids = esListService.searchByTenThuoc(req.getTenThuoc());
+        if(!ids.stream().isParallel()){
+            return redisListService.getHangHoaByIds(ids);
+        }else {
+            Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
+            var data = hdrRepo.searchPage(req, pageable);
+            return data.stream().toList();
+        }
     }
 
-//    public HangHoaES saveProduct() {
-//        HangHoa hangHoa = hdrRepo.findByThuocId(9738374L);
-//        HangHoaES hangHoaES = new HangHoaES();
-//        hangHoaES.setId(hangHoa.getThuocId().toString());
-//        hangHoaES.setName(hangHoa.getTenThuoc());
-//        return hangHoaESRepository.save(hangHoaES);
-//    }
+    public void saveProduct() throws Exception{
+        var req = new HangHoaRep();
+        var list = hdrRepo.searchList(req);
+        esListService.pushProductData(list);
+    }
 }
