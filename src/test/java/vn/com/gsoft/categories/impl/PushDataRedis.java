@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import vn.com.gsoft.categories.model.cache.HangHoaCache;
+import vn.com.gsoft.categories.model.dto.HangHoaRep;
 import vn.com.gsoft.categories.service.HangHoaService;
 import vn.com.gsoft.categories.service.RedisListService;
 
@@ -18,6 +19,9 @@ class PushDataRedis {
     private RedisListService redisListService;
     @Test
     void pushProductData() throws Exception {
-        //List<HangHoaCache> hh = hangHoaService.getProductData();
+        HangHoaRep rep = new HangHoaRep();
+        rep.setTenThuoc("ginseng");
+        //List<HangHoaCache> hh = hangHoaService.getProductData(rep);
+        //hangHoaService.pushProductData();
     }
 }

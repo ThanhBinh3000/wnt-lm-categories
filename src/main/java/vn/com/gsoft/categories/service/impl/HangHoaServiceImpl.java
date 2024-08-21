@@ -40,8 +40,6 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
     private HangHoaRepository hdrRepo;
     @Autowired
     private RedisListService redisListService;
-//    @Autowired
-//    private HangHoaESRepository hangHoaESRepository;
     @Autowired
     private ESListService esListService;
 
@@ -53,20 +51,23 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
     }
 
     @Override
-    public void pushProductData() {
-        HangHoaRep rep = new HangHoaRep();
-        var data = hdrRepo.searchListHangHoa();
-        redisListService.pushProductDataRedis(DataUtils.convertList(data, HangHoaCache.class));
+    public void pushProductData() throws Exception{
+        HangHoaRep req = new HangHoaRep();
+        Pageable pageable = PageRequest.of(1, 10000);
+        var data = hdrRepo.searchPage(req, pageable);
+        esListService.pushProductData(data.stream().toList());
     }
 
     @Override
-    public Page<HangHoa> getProductData(HangHoaRep req) {
-//        var ids = new ArrayList<Long>();
-//        ids.add(9738374L);
-        Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
-        Page<HangHoa> hangHoas = hdrRepo.searchPage(req, pageable);
-        return hangHoas;
-        //return redisListService.getHangHoaByIds(ids);
+    public List<? extends Object> getProductData(HangHoaRep req) throws Exception {
+        var ids = esListService.searchByTenThuoc(req.getTenThuoc());
+        if(!ids.stream().isParallel()){
+            return redisListService.getHangHoaByIds(ids);
+        }else {
+            Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
+            var data = hdrRepo.searchPage(req, pageable);
+            return data.stream().toList();
+        }
     }
 
     public void saveProduct() throws Exception{

@@ -5,6 +5,8 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
@@ -12,6 +14,10 @@ import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,6 +31,7 @@ import vn.com.gsoft.categories.service.ESListService;
 import vn.com.gsoft.categories.service.RedisListService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +54,25 @@ public class ESListServiceImpl implements ESListService {
 //        if(!indexExist()){
 //            createIndexWithCustomSettings();
 //        }
+        //createIndexWithCustomSettings();
         bulkInsert(data);
+    }
+
+    public List<Long> searchByTenThuoc(String tenThuoc) throws IOException {
+        SearchRequest searchRequest = new SearchRequest(ESConstant.INDEX_PRODUCT);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchQuery("name", tenThuoc));
+        searchSourceBuilder.size(ESConstant.MAX_SIZE);
+        searchRequest.source(searchSourceBuilder);
+
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        SearchHits hits = searchResponse.getHits();
+
+        List<Long> ids = new ArrayList<>();
+        for (SearchHit hit : hits) {
+            ids.add(Long.valueOf(hit.getId()));
+        }
+        return ids;
     }
 
     private void createIndexWithCustomSettings() throws Exception {
@@ -62,34 +87,24 @@ public class ESListServiceImpl implements ESListService {
         client.indices().create(request, RequestOptions.DEFAULT);
     }
 
-    private void bulkInsert(List<HangHoa> hangHoas) throws IOException {
-        int batchSize = 1000;
-        for (int i = 0; i < hangHoas.size(); i += batchSize) {
-            BulkRequest bulkRequest = new BulkRequest();
-            int end = Math.min(i + batchSize, hangHoas.size());
+    public void bulkInsert(List<HangHoa> data) throws IOException {
+        BulkRequest bulkRequest = new BulkRequest();
 
-            for (int j = i; j < end; j++) {
-                Map<String, Object> data = new HashMap<>();
-                data.put("id", hangHoas.get(j).getThuocId());
-                data.put("name", hangHoas.get(j).getTenThuoc());
-                IndexRequest request = new IndexRequest(ESConstant.INDEX_PRODUCT)
-                        .id(String.valueOf(hangHoas.get(j).getThuocId()))
-                        .source(data, XContentType.JSON);
-                bulkRequest.add(request);
-            }
+        data.forEach(x->{
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", x.getThuocId());
+            item.put("name", x.getTenThuoc());
+            bulkRequest.add(new IndexRequest(ESConstant.INDEX_PRODUCT)
+                    .id(x.getThuocId().toString()).source(item, XContentType.JSON));
+        });
 
-            BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
-//
-//            if (bulkResponse.hasFailures()) {
-//                System.out.println("Bulk request had failures:");
-//                bulkResponse.forEach(item -> {
-//                });
-//            } else {
-//                System.out.println("Bulk request succeeded.");
-//            }
+        BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+        if (bulkResponse.hasFailures()) {
+            System.out.println("Bulk request had failures:");
+        } else {
+            System.out.println("Bulk request succeeded.");
         }
     }
-
     private boolean indexExist() {
         try {
             GetIndexRequest request = new GetIndexRequest(ESConstant.INDEX_PRODUCT);

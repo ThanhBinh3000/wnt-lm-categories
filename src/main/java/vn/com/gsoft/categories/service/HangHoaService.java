@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface HangHoaService extends BaseService<HangHoa, HangHoaRep, Long> {
 
-    void pushProductData();
+    void pushProductData() throws Exception;
 
-    Page<HangHoa> getProductData(HangHoaRep req);
+    List<? extends Object> getProductData(HangHoaRep req) throws Exception;
 
     void saveProduct() throws Exception;
 }
