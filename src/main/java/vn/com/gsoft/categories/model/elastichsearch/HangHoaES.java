@@ -10,10 +10,8 @@ import org.springframework.data.annotation.Id;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//@Document(indexName = "products")
 public class HangHoaES {
     @Id
     private String id;
-    //@Field(type = FieldType.Text)
     private String name;
 }

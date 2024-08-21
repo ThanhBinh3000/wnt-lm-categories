@@ -2,7 +2,15 @@ package vn.com.gsoft.categories.service.impl;
 
 
 import lombok.extern.log4j.Log4j2;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,10 +21,12 @@ import vn.com.gsoft.categories.model.cache.HangHoaCache;
 import vn.com.gsoft.categories.model.elastichsearch.HangHoaES;
 import vn.com.gsoft.categories.model.system.Profile;
 import vn.com.gsoft.categories.repository.*;
+import vn.com.gsoft.categories.service.ESListService;
 import vn.com.gsoft.categories.service.HangHoaService;
 import vn.com.gsoft.categories.service.RedisListService;
 import vn.com.gsoft.categories.util.system.DataUtils;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,6 +42,8 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
     private RedisListService redisListService;
 //    @Autowired
 //    private HangHoaESRepository hangHoaESRepository;
+    @Autowired
+    private ESListService esListService;
 
     @Autowired
     public HangHoaServiceImpl(HangHoaRepository hdrRepo
@@ -57,11 +69,9 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
         //return redisListService.getHangHoaByIds(ids);
     }
 
-//    public HangHoaES saveProduct() {
-//        HangHoa hangHoa = hdrRepo.findByThuocId(9738374L);
-//        HangHoaES hangHoaES = new HangHoaES();
-//        hangHoaES.setId(hangHoa.getThuocId().toString());
-//        hangHoaES.setName(hangHoa.getTenThuoc());
-//        return hangHoaESRepository.save(hangHoaES);
-//    }
+    public void saveProduct() throws Exception{
+        var req = new HangHoaRep();
+        var list = hdrRepo.searchList(req);
+        esListService.pushProductData(list);
+    }
 }
