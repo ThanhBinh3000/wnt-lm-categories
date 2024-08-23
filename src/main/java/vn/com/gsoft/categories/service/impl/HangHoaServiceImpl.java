@@ -63,10 +63,10 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
         if(req.getTenThuoc() == null || req.getTenThuoc().equals(""))
             return new ArrayList<>();
         var ids = esListService.searchByTenThuoc(req.getTenThuoc());
-        if(!ids.stream().isParallel()){
+        if(ids.stream().count() > 0){
             return redisListService.getHangHoaByIds(ids);
         }else {
-            Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
+            Pageable pageable = PageRequest.of(0, 25);
             var data = hdrRepo.searchPage(req, pageable);
             return data.stream().toList();
         }
