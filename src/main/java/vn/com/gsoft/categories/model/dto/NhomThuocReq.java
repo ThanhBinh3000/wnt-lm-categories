@@ -8,4 +8,5 @@ import vn.com.gsoft.categories.model.system.BaseRequest;
 @Data
 public class NhomThuocReq extends BaseRequest {
     private String tenNhomThuoc ;
+    private String maNhaThuoc;
 }

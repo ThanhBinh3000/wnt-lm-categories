@@ -1,14 +1,11 @@
 package vn.com.gsoft.categories.service;
 
-import org.springframework.data.domain.Page;
-import vn.com.gsoft.categories.entity.HangHoa;
+import vn.com.gsoft.categories.entity.Thuocs;
 import vn.com.gsoft.categories.model.dto.HangHoaRep;
-import vn.com.gsoft.categories.model.cache.HangHoaCache;
-import vn.com.gsoft.categories.model.elastichsearch.HangHoaES;
 
 import java.util.List;
 
-public interface HangHoaService extends BaseService<HangHoa, HangHoaRep, Long> {
+public interface HangHoaService extends BaseService<Thuocs, HangHoaRep, Long> {
 
     void pushProductData() throws Exception;
 

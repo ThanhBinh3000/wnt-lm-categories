@@ -15,4 +15,5 @@ public class HangHoaRep extends BaseRequest {
     private Integer nhomNganhHangId;
     private Integer hangThayTheId;
     private String tenThuoc;
+    private String maNhaThuoc;
 }

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vn.com.gsoft.categories.constant.RecordStatusContains;
 import vn.com.gsoft.categories.entity.*;
 import vn.com.gsoft.categories.model.dto.HangHoaRep;
 import vn.com.gsoft.categories.model.cache.HangHoaCache;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Log4j2
-public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Long> implements HangHoaService {
+public class HangHoaServiceImpl extends BaseServiceImpl<Thuocs, HangHoaRep, Long> implements HangHoaService {
 
 
     @Autowired
@@ -66,7 +67,9 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
         if(ids.stream().count() > 0){
             return redisListService.getHangHoaByIds(ids);
         }else {
-            Pageable pageable = PageRequest.of(0, 25);
+            Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
+            req.setMaNhaThuoc("0012");
+            req.setRecordStatusId(RecordStatusContains.ACTIVE);
             var data = hdrRepo.searchPage(req, pageable);
             return data.stream().toList();
         }
@@ -74,6 +77,8 @@ public class HangHoaServiceImpl extends BaseServiceImpl<HangHoa, HangHoaRep, Lon
 
     public void saveProduct() throws Exception{
         var req = new HangHoaRep();
+        req.setMaNhaThuoc("0012");
+        req.setRecordStatusId(RecordStatusContains.ACTIVE);
         var list = hdrRepo.searchList(req);
         esListService.pushProductData(list);
     }
