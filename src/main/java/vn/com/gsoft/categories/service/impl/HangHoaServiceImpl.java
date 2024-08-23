@@ -61,6 +61,8 @@ public class HangHoaServiceImpl extends BaseServiceImpl<Thuocs, HangHoaRep, Long
 
     @Override
     public List<? extends Object> getProductData(HangHoaRep req) throws Exception {
+        if(req.getTenThuoc() == null || req.getTenThuoc().equals(""))
+            return new ArrayList<>();
         var ids = esListService.searchByTenThuoc(req.getTenThuoc());
         if(ids.stream().count() > 0){
             return redisListService.getHangHoaByIds(ids);
