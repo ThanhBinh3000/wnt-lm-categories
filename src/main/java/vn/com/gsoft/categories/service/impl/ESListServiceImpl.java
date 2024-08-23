@@ -1,10 +1,8 @@
 package vn.com.gsoft.categories.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -20,22 +18,16 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import vn.com.gsoft.categories.constant.CachingConstant;
 import vn.com.gsoft.categories.constant.ESConstant;
-import vn.com.gsoft.categories.entity.HangHoa;
-import vn.com.gsoft.categories.model.cache.HangHoaCache;
-import vn.com.gsoft.categories.model.elastichsearch.HangHoaES;
+import vn.com.gsoft.categories.entity.Thuocs;
 import vn.com.gsoft.categories.service.ESListService;
-import vn.com.gsoft.categories.service.RedisListService;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ESListServiceImpl implements ESListService {
@@ -50,7 +42,7 @@ public class ESListServiceImpl implements ESListService {
     private Integer numberOfShards;
 
     @Override
-    public void pushProductData(List<HangHoa> data) throws Exception {
+    public void pushProductData(List<Thuocs> data) throws Exception {
 //        if(!indexExist()){
 //            createIndexWithCustomSettings();
 //        }
@@ -87,7 +79,7 @@ public class ESListServiceImpl implements ESListService {
         client.indices().create(request, RequestOptions.DEFAULT);
     }
 
-    public void bulkInsert(List<HangHoa> data) throws IOException {
+    public void bulkInsert(List<Thuocs> data) throws IOException {
         BulkRequest bulkRequest = new BulkRequest();
 
         data.forEach(x->{

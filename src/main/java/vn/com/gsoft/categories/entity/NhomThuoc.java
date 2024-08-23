@@ -12,13 +12,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "NhomThuoc")
+@Table(name = "NhomThuocs")
 public class NhomThuoc extends BaseEntity{
     @Id
-    @Column(name = "Id")
-    private Long id;
-    @Column(name = "NhomThuocId")
-    private Integer nhomThuocId;
+    @Column(name = "MaNhomThuoc")
+    private Long maNhomThuoc;
     @Column(name = "TenNhomThuoc")
     private String tenNhomThuoc;
+    @Column(name = "MaNhaThuoc")
+    private String maNhaThuoc;
 }

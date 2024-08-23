@@ -19,8 +19,8 @@ class PushDataRedis {
     private RedisListService redisListService;
     @Test
     void pushProductData() throws Exception {
-        HangHoaRep rep = new HangHoaRep();
-        rep.setTenThuoc("ginseng");
+        //HangHoaRep rep = new HangHoaRep();
+        //rep.setTenThuoc("ginseng");
         //List<HangHoaCache> hh = hangHoaService.getProductData(rep);
         //hangHoaService.pushProductData();
     }
