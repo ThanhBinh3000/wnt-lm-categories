@@ -2,10 +2,12 @@ package vn.com.gsoft.categories.model.dto;
 
 import jakarta.persistence.Column;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import vn.com.gsoft.categories.model.system.BaseRequest;
 
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class NotificationReq extends BaseRequest {
     private String drugStoreId;
