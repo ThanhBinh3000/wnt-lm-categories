@@ -27,6 +27,8 @@ public class SearchItemController {
   private NhomDuocLyService nhomDuocLyService;
   @Autowired
   private NhomHoatChatService nhomHoatChatService;
+  @Autowired
+  private NhaCungCapService nhaCungCapService;
 
   //region NHOM THUOC
   @PostMapping(value = PathConstant.URL_SEARCH_LIST + "-nhom-thuoc", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -95,6 +97,20 @@ public class SearchItemController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<BaseResponse> searchPageNhomHoatChat(@RequestBody NhomHoatChatReq req) throws Exception {
     return ResponseEntity.ok(ResponseUtils.ok(nhomHoatChatService.searchPage(req)));
+  }
+  //endregion
+
+  //region NHA CUNG CAP
+  @PostMapping(value = PathConstant.URL_SEARCH_LIST + "-nha-cung-cap", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchListNhaCungCap(@RequestBody NhaCungCapReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhaCungCapService.searchList(req)));
+  }
+
+  @PostMapping(value = PathConstant.URL_SEARCH_PAGE + "-nha-cung-cap", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> searchPageNhaCungCap(@RequestBody NhaCungCapReq req) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(nhaCungCapService.searchPage(req)));
   }
   //endregion
 }
