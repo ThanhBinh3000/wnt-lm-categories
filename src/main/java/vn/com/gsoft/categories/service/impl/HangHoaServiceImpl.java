@@ -68,7 +68,7 @@ public class HangHoaServiceImpl extends BaseServiceImpl<Thuocs, HangHoaRep, Long
             return redisListService.getHangHoaByIds(ids);
         }else {
             Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
-            req.setMaNhaThuoc("0012");
+            //req.setMaNhaThuoc("0012");
             req.setRecordStatusId(RecordStatusContains.ACTIVE);
             var data = hdrRepo.searchPage(req, pageable);
             return data.stream().toList();
