@@ -33,9 +33,9 @@ public class NhomDuoclyServiceImpl extends BaseServiceImpl<NhomDuocLy, NhomDuocL
 	@Override
 	public List<NhomDuocLy> searchList(NhomDuocLyReq req){
 		//kiem tra nhom nganh hang la tpcn
-		if(req.getNhomNganhHangId() > 0){
+		if (req != null && req.getNhomNganhHangId() != null && req.getNhomNganhHangId() > 0) {
 			var nh = nganhHangRepository.findById(Long.valueOf(req.getNhomNganhHangId()));
-			if(nh != null && !nh.get().getTenNganhHang().equals("Thực phẩm chức năng")){
+			if (nh.isPresent() && !nh.get().getTenNganhHang().equals("Thực phẩm chức năng")) {
 				req.setNhomNganhHangId(0);
 			}
 		}
