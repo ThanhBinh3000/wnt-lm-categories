@@ -11,11 +11,11 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class ESListServiceImpl implements ESListService {
     @Override
     public void pushProductData(List<Thuocs> data) throws Exception {
 //        if(!indexExist()){
-//            createIndexWithCustomSettings();
+//        createIndexWithCustomSettings();
 //        }
         //createIndexWithCustomSettings();
         bulkInsert(data);
@@ -61,6 +61,7 @@ public class ESListServiceImpl implements ESListService {
         SearchHits hits = searchResponse.getHits();
 
         List<Long> ids = new ArrayList<>();
+        if(hits.getTotalHits().value <= 0) return ids;
         for (SearchHit hit : hits) {
             ids.add(Long.valueOf(hit.getId()));
         }
@@ -73,28 +74,29 @@ public class ESListServiceImpl implements ESListService {
         request.settings(Settings.builder()
                 .put("index.number_of_shards", numberOfShards)
                 .put("index.number_of_replicas", numberOfReplicas)
-                .put("index.refresh_interval", refreshInterval)
         );
 
         client.indices().create(request, RequestOptions.DEFAULT);
     }
 
     public void bulkInsert(List<Thuocs> data) throws IOException {
+        int batchSize = 1000;
         BulkRequest bulkRequest = new BulkRequest();
 
-        data.forEach(x->{
-            Map<String, Object> item = new HashMap<>();
-            item.put("id", x.getThuocId());
-            item.put("name", x.getTenThuoc());
-            bulkRequest.add(new IndexRequest(ESConstant.INDEX_PRODUCT)
-                    .id(x.getThuocId().toString()).source(item, XContentType.JSON));
-        });
+        for (int i = 0; i < data.size(); i++) {
+            Thuocs x = data.get(i);
+            bulkRequest.add(new IndexRequest(ESConstant.INDEX_PRODUCT, "_doc")
+                    .source(XContentType.JSON, "id", x.getThuocId(), "name", x.getTenThuoc()));
 
-        BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
-        if (bulkResponse.hasFailures()) {
-            System.out.println("Bulk request had failures:");
-        } else {
-            System.out.println("Bulk request succeeded.");
+            if (i > 0 && i % batchSize == 0 || i == data.size() - 1) {
+                BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+                if (bulkResponse.hasFailures()) {
+                    System.out.println("Bulk request had failures:");
+                } else {
+                    System.out.println("Bulk request succeeded.");
+                }
+                bulkRequest = new BulkRequest();
+            }
         }
     }
     private boolean indexExist() {

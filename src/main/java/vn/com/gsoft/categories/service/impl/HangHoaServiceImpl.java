@@ -8,7 +8,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
@@ -20,6 +19,7 @@ import vn.com.gsoft.categories.entity.*;
 import vn.com.gsoft.categories.model.dto.HangHoaRep;
 import vn.com.gsoft.categories.model.cache.HangHoaCache;
 import vn.com.gsoft.categories.model.elastichsearch.HangHoaES;
+import vn.com.gsoft.categories.model.system.PaggingReq;
 import vn.com.gsoft.categories.model.system.Profile;
 import vn.com.gsoft.categories.repository.*;
 import vn.com.gsoft.categories.service.ESListService;
@@ -54,25 +54,39 @@ public class HangHoaServiceImpl extends BaseServiceImpl<Thuocs, HangHoaRep, Long
     @Override
     public void pushProductData() throws Exception{
         HangHoaRep req = new HangHoaRep();
-        Pageable pageable = PageRequest.of(1, 10000);
-        var data = hdrRepo.searchPage(req, pageable);
-        esListService.pushProductData(data.stream().toList());
+        req.setMaNhaThuoc("0012");
+        var data = hdrRepo.searchList(req);
+        esListService.pushProductData(data);
     }
 
     @Override
     public List<? extends Object> getProductData(HangHoaRep req) throws Exception {
         if(req.getTenThuoc() == null || req.getTenThuoc().equals(""))
             return new ArrayList<>();
-        var ids = esListService.searchByTenThuoc(req.getTenThuoc());
-        if(ids.stream().count() > 0){
-            return redisListService.getHangHoaByIds(ids);
-        }else {
-            Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
-            //req.setMaNhaThuoc("0012");
-            req.setRecordStatusId(RecordStatusContains.ACTIVE);
-            var data = hdrRepo.searchPage(req, pageable);
-            return data.stream().toList();
+//        List<Long> ids = new ArrayList<Long>();
+//        if(req.getMaNhaThuoc() == "0012"){
+//            ids = esListService.searchByTenThuoc(req.getTenThuoc());
+//        }
+//        if(ids.stream().count() > 0){
+//            return redisListService.getHangHoaByIds(ids);
+//        }else {
+//            Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
+//            //req.setMaNhaThuoc("0012");
+//            req.setRecordStatusId(RecordStatusContains.ACTIVE);
+//            var data = hdrRepo.searchPage(req, pageable);
+//            return data.stream().toList();
+//        }
+        if(req.getPaggingReq() == null){
+            var page = new PaggingReq();
+            page.setLimit(25);
+            page.setPage(0);
+            req.setPaggingReq(page);
         }
+        Pageable pageable = PageRequest.of(req.getPaggingReq().getPage(), req.getPaggingReq().getLimit());
+        //req.setMaNhaThuoc("0012");
+        req.setRecordStatusId(RecordStatusContains.ACTIVE);
+        var data = hdrRepo.searchPage(req, pageable);
+        return data.stream().toList();
     }
 
     public void saveProduct() throws Exception{
