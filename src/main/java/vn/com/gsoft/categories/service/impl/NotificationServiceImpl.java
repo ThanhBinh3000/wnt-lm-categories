@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.com.gsoft.categories.constant.NotificationContains;
+import vn.com.gsoft.categories.constant.NotificationStatusContains;
 import vn.com.gsoft.categories.entity.NhomThuoc;
 import vn.com.gsoft.categories.entity.Notification;
 import vn.com.gsoft.categories.model.dto.NhomThuocReq;
@@ -72,6 +73,15 @@ public class NotificationServiceImpl extends BaseServiceImpl<Notification, Notif
 		   }
 		});
 		return lst;
+	}
+
+	//update trạng thái
+	public boolean updateStatus(List<Notification> items){
+		items.forEach(x->{
+			x.setStatus(NotificationStatusContains.READ);
+		});
+		hdrRepo.saveAll(items);
+		return  true;
 	}
 
 	private String fnGetTime(Date date) {

@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.com.gsoft.categories.constant.PathConstant;
+import vn.com.gsoft.categories.entity.Notification;
 import vn.com.gsoft.categories.model.dto.CitiesReq;
 import vn.com.gsoft.categories.model.dto.NotificationReq;
 import vn.com.gsoft.categories.model.dto.RegionsReq;
@@ -17,6 +18,8 @@ import vn.com.gsoft.categories.service.NotificationService;
 import vn.com.gsoft.categories.service.RegionsService;
 import vn.com.gsoft.categories.service.WardsService;
 import vn.com.gsoft.categories.util.system.ResponseUtils;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -36,5 +39,11 @@ public class NotificationController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<BaseResponse> searchList(@RequestBody NotificationReq req) throws Exception {
     return ResponseEntity.ok(ResponseUtils.ok(service.searchList(req)));
+  }
+
+  @PostMapping(value = PathConstant.URL_UPDATE + "-trang-thai", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<BaseResponse> updateStatus(@RequestBody List<Notification> items) throws Exception {
+    return ResponseEntity.ok(ResponseUtils.ok(service.updateStatus(items)));
   }
 }
