@@ -32,7 +32,7 @@ public class NotificationController {
   @PostMapping(value = PathConstant.URL_SEARCH_PAGE, produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<BaseResponse> searchPage(@RequestBody NotificationReq req) throws Exception {
-    return ResponseEntity.ok(ResponseUtils.ok(service.searchList(req)));
+    return ResponseEntity.ok(ResponseUtils.ok(service.searchPage(req)));
   }
 
   @PostMapping(value = PathConstant.URL_SEARCH_LIST, produces = MediaType.APPLICATION_JSON_VALUE)
